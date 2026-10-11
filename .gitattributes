@@ -1,0 +1,3 @@
+* text=auto eol=lf
+*.png binary
+third_party/node/*/LICENSE -text

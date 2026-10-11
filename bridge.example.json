@@ -1,0 +1,10 @@
+{
+  "callerThreadId": "YOUR_AUTHORIZED_CODEX_THREAD_ID",
+  "allowedThreadIds": ["YOUR_AUTHORIZED_CODEX_THREAD_ID"],
+  "allowedProjectIds": [],
+  "allowSend": false,
+  "allowCreate": false,
+  "allowProjectlessCreate": false,
+  "allowAllLocalConversations": false,
+  "pipePath": "\\\\.\\pipe\\codex-browser-use-REPLACE-WITH-LOCAL-ENDPOINT"
+}

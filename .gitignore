@@ -1,0 +1,12 @@
+node_modules/
+dist/
+runtime/
+bridge.local.json
+claude.mcp.local.json
+state/
+recovery/
+.config-*.json
+.env
+.env.*
+conversation/
+*.log

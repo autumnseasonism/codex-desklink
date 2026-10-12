@@ -2,11 +2,15 @@
 
 ## Integration boundary
 
-DeskLink connects through the desktop's bundled `codex-app-tools` MCP server and a Windows local named pipe. All-local browsing reads `state_5.sqlite` **read-only** and version-specific project metadata. No direct database write is used to send, create or restore chats: those operations go through the desktop tools.
+DeskLink connects through the desktop's bundled `codex-app-tools` MCP server and a Windows local named pipe. All-local browsing reads `state_5.sqlite` **read-only** and version-specific project metadata. No direct database write is used: desktop tools handle execution, reading and restoration; 0.2.0 additionally uses the running daemon's experimental project and new-thread APIs. See [client-owned workflow](CLIENT_OWNED.md).
 
 This is **not an official stable external API**. App updates can change the endpoint, tool responses or local metadata schema. A successful MCP helper startup alone does not prove desktop connectivity: `bridge_status` also reads the authorized caller chat. No general cross-version support guarantee is made.
 
-底层依赖桌面内置工具和本机通信管道。全本机目录以只读方式访问已验证版本的索引；发送、新建与归档恢复通过桌面工具执行，不直接改数据库。接口可能随升级变化，连接检查会实际读取已授权聊天，不仅检查辅助进程启动。
+底层依赖桌面内置工具和本机通信管道。全本机目录以只读方式访问已验证版本的索引；0.2.0 还通过运行中的原生服务创建项目与新项目会话，桌面负责执行、读回和恢复，不直接改数据库。接口可能随升级变化，连接检查会实际读取已授权聊天并探测项目接口。
+
+## Local 0.2.0 verification — 2026-10-12
+
+PI was tested first, then Claude Code. Both created separate controller chats, registered real local projects, created work chats in those projects, continued them and read completed marker replies. Claude's attempt to read a PI-owned chat was rejected. Persisted message source IDs were checked against each client's controller. UI source-link clicks were not tested; native project registration may not appear in the old desktop project picker even though the daemon stores the real project and chat assignment. Source and self-contained package tests cover ownership, restart, deduplication, root escape and failed new-thread handoff. This is a local update, not a published release; cross-version compatibility remains unknown.
 
 ## Observed verification
 

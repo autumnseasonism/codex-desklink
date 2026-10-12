@@ -14,7 +14,7 @@ export class DesktopClient{
   for(const k of ['PATH','Path','HOME','USERPROFILE','APPDATA','LOCALAPPDATA','SystemRoot','COMSPEC','TEMP','TMP'])if(process.env[k])env[k]=process.env[k];
   env.CODEX_APP_TOOLS_PIPE_PATH=this.config.pipePath;
   const transport=new StdioClientTransport({command:process.execPath,args:[this.config.appToolsServerPath],env,stderr:'pipe'});
-  const client=new Client({name:'codex-desklink',version:'0.1.2'});
+  const client=new Client({name:'codex-desklink',version:'0.2.0'});
   try{
    await client.connect(transport,{timeout:15000});
    const {tools}=await client.listTools({}, {timeout:15000});
@@ -23,11 +23,11 @@ export class DesktopClient{
    client.onclose=()=>{if(this.client===client){this.client=null;this.transport=null;this.catalog=[];}};
   }catch(e){await transport.close().catch(()=>{});throw e;}
  }
- async call(name,args){
+ async call(name,args,callerThreadId=this.config.callerThreadId){
   if(!['read_thread','send_message_to_thread','create_thread','list_threads','list_projects','set_thread_archived'].includes(name))throw Error('Desktop operation is not exposed by this bridge');
   await this.connect();
   if(!this.catalog.includes(name))throw Error('Desktop capability is unavailable: '+name);
-  const result=await this.client.callTool({name,arguments:args,_meta:{'openai/threadId':this.config.callerThreadId}},undefined,{timeout:30000});
+  const result=await this.client.callTool({name,arguments:args,_meta:{'openai/threadId':callerThreadId}},undefined,{timeout:30000});
   const text=result.content.filter(c=>c.type==='text').map(c=>c.text).join('\n');
   if(result.isError)throw Error(text||'Desktop rejected the operation');
   try{return JSON.parse(text);}catch{throw Error('Desktop returned an unexpected result format');}

@@ -12,11 +12,13 @@
 
 <p align="center"><a href="README.md">English</a> · <a href="https://github.com/autumnseasonism/codex-desklink/releases/latest">下载 Windows 安装包</a> · <a href="docs/INSTALL.md">安装说明</a> · <a href="docs/COMPATIBILITY.md">验证范围</a></p>
 
+**本地 0.2.0 更新：**Claude / PI 各有独立控制入口和所属工作会话，支持真实新建项目，所有支持的功能明确开启；旧连接继续保留。[独立入口说明](docs/CLIENT_OWNED.md)。公开下载包目前仍为 0.1.2。
+
 ## 从上次停下的地方，继续工作
 
 你先在 Codex 桌面讨论了一个任务，随后想让 Claude 或 PI 了解进展、请 Codex 继续处理。DeskLink 把这条连接打通，保留原来的聊天入口和桌面显示。
 
-**MCP** 是让 Agent 使用外部工具的通用连接方式。DeskLink 提供七个工具，通过本机连接与正在运行的 Codex 桌面通信。
+**MCP** 是让 Agent 使用外部工具的通用连接方式。DeskLink 提供八个工具，通过本机连接与正在运行的 Codex 桌面通信。
 
 | 你想做什么 | DeskLink 提供什么 |
 | :-- | :-- |
@@ -71,7 +73,7 @@ DeskLink 本身不开放网络监听端口。Codex 和客户端仍使用各自�
 
 **不需要 hooks。** DeskLink 不修改 Codex 全局钩子；已有钩子失败仍需单独排查。
 
-## 七个工具
+## 八个工具
 
 | 工具 | 用途 |
 | :-- | :-- |
@@ -82,6 +84,7 @@ DeskLink 本身不开放网络监听端口。Codex 和客户端仍使用各自�
 | `continue_conversation` | 发送明确授权的后续消息，可选择恢复归档 |
 | `get_conversation_result` | 查看最新回合的进展、回复和完成状态 |
 | `create_conversation` | 在单独开启的新建范围内创建本机聊天 |
+| `create_project` | 先建立所属会话，再在允许目录内注册真实本机项目 |
 
 客户端注册名保留 **`codex_desktop`**，兼容已有安装。项目及服务名称为 **Codex DeskLink / `codex-desklink`**。
 

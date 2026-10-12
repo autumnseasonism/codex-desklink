@@ -14,11 +14,13 @@ Let Claude Code or PI find, read and continue your local Codex chats — with re
 
 <p align="center"><a href="README.zh-CN.md">简体中文</a> · <a href="https://github.com/autumnseasonism/codex-desklink/releases/latest">Download for Windows</a> · <a href="docs/INSTALL.md">Install guide</a> · <a href="docs/COMPATIBILITY.md">Verified scope</a></p>
 
+**Local 0.2.0 update:** separate PI / Claude controller chats, client-owned work chats and real project creation, with supported features explicitly enabled. Legacy connections remain available. [Client-owned workflow](docs/CLIENT_OWNED.md). The published ZIP is still 0.1.2.
+
 ## Keep working where you left off
 
 You started a task in Codex desktop. Later, you want Claude or PI to pick up the context and ask Codex to continue. DeskLink bridges that handoff while keeping the same conversation visible in Codex.
 
-**MCP** is a standard way for an agent to use tools. DeskLink exposes seven tools and connects them to the running Codex desktop app through a local connection.
+**MCP** is a standard way for an agent to use tools. DeskLink exposes eight tools and connects them to the running Codex desktop app through a local connection.
 
 | You want to… | DeskLink can… |
 | :-- | :-- |
@@ -73,7 +75,7 @@ The [installation guide](docs/INSTALL.md) includes the exact scripts, source set
 
 No hooks are required. DeskLink does not modify Codex global hooks. An existing hook failure remains a separate issue to diagnose.
 
-## Seven tools
+## Eight tools
 
 | Tool | Purpose |
 | :-- | :-- |
@@ -84,6 +86,7 @@ No hooks are required. DeskLink does not modify Codex global hooks. An existing 
 | `continue_conversation` | Send an explicitly requested follow-up, with optional archive restoration |
 | `get_conversation_result` | Inspect latest-turn progress, replies and completion |
 | `create_conversation` | Start a local chat under separately enabled creation scope |
+| `create_project` | Register a real local project under allowed folders after creating an owned chat |
 
 The client registration name stays **`codex_desktop`** for compatibility with existing installations. The project and server name are **Codex DeskLink / `codex-desklink`**.
 

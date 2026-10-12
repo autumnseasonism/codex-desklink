@@ -21,7 +21,7 @@ else{
  license=await response.text();
 }
 if(!license.includes('Permission is hereby granted'))throw Error('Unexpected Node license content');
-const names=['.gitattributes','actions.mjs','bridge.mjs','config.mjs','desktop.mjs','local-index.mjs','pi-extension.mjs','server.mjs','bridge.example.json','package.json','package-lock.json','node_modules','tests','docs','scripts','third_party','README.md','README.zh-CN.md','LICENSE','SECURITY.md','CONTRIBUTING.md','THIRD_PARTY_NOTICES.md','CHANGELOG.md','configure.ps1','configure-local.mjs','generate-client-config.mjs','install-claude.ps1','install-pi.ps1','start-claude.ps1','start-pi.ps1'];
+const names=['.gitattributes','projects.mjs','setup-owned-clients.mjs','pi-owned-extension.mjs','start-pi-owned.ps1','start-claude-owned.ps1','actions.mjs','bridge.mjs','config.mjs','desktop.mjs','local-index.mjs','pi-extension.mjs','server.mjs','bridge.example.json','package.json','package-lock.json','node_modules','tests','docs','scripts','third_party','README.md','README.zh-CN.md','LICENSE','SECURITY.md','CONTRIBUTING.md','THIRD_PARTY_NOTICES.md','CHANGELOG.md','configure.ps1','configure-local.mjs','generate-client-config.mjs','install-claude.ps1','install-pi.ps1','start-claude.ps1','start-pi.ps1'];
 for(const name of names)if(!fs.existsSync(path.join(root,name)))throw Error(`Missing build input: ${name}; run npm ci first`);
 fs.mkdirSync(output,{recursive:true});
 for(const name of names)fs.cpSync(path.join(root,name),path.join(output,name),{recursive:true,errorOnExist:true,force:false});

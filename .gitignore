@@ -4,6 +4,7 @@ runtime/
 bridge.local.json
 claude.mcp.local.json
 state/
+profiles/
 recovery/
 .config-*.json
 .env

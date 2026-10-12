@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="716" viewBox="0 0 1280 716" role="img" aria-labelledby="title desc">
+<title id="title">Codex DeskLink 0.2.1: recorded PI and Claude verification</title>
+<desc id="desc">Real local tests on 12 October 2026. PI first, then Claude continued the same pre-existing test chat to completion. Each message source matched its own controller. Twenty-two source and twenty-two bundle tests passed. This is a visualization of recorded tool results, not a desktop screenshot.</desc>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0c1729"/><stop offset="1" stop-color="#142c3c"/></linearGradient></defs>
+<rect width="1280" height="716" rx="24" fill="url(#bg)"/>
+<g font-family="Segoe UI, Arial, sans-serif">
+<text x="48" y="53" fill="#9ce7cc" font-size="15" font-weight="700" letter-spacing="2">REAL LOCAL VERIFICATION · 12 OCT 2026</text>
+<text x="48" y="106" fill="#f5f8fc" font-size="38" font-weight="700">Separate sources. One existing chat.</text>
+<text x="48" y="146" fill="#c3d1df" font-size="21">PI first, then Claude — both resumed the same pre-existing Codex conversation.</text>
+<rect x="48" y="182" width="568" height="314" rx="18" fill="#ffffff"/>
+<rect x="640" y="182" width="592" height="314" rx="18" fill="#ffffff"/>
+<circle cx="86" cy="225" r="18" fill="#e3f7ef"/><text x="80" y="231" fill="#137553" font-size="17" font-weight="700">1</text>
+<text x="118" y="234" fill="#15263b" font-size="26" font-weight="700">PI</text>
+<text x="76" y="277" fill="#4c6175" font-size="18">Source: own PI controller</text>
+<text x="76" y="313" fill="#4c6175" font-size="18">Target: pre-existing test conversation</text>
+<rect x="76" y="343" width="512" height="65" rx="10" fill="#f0f6fa"/>
+<text x="94" y="382" fill="#15263b" font-family="Consolas, monospace" font-size="19">PI_EXISTING_20261012_SCOPE_OK</text>
+<circle cx="86" cy="451" r="10" fill="#1c9067"/><path d="M81 451l3 3 6-7" fill="none" stroke="white" stroke-width="2"/>
+<text x="109" y="458" fill="#137553" font-size="20" font-weight="600">Completed · source matched</text>
+<circle cx="678" cy="225" r="18" fill="#e8edff"/><text x="672" y="231" fill="#455eb3" font-size="17" font-weight="700">2</text>
+<text x="710" y="234" fill="#15263b" font-size="26" font-weight="700">Claude Code</text>
+<text x="668" y="277" fill="#4c6175" font-size="18">Source: own Claude controller</text>
+<text x="668" y="313" fill="#4c6175" font-size="18">Target: the same existing conversation</text>
+<rect x="668" y="343" width="536" height="65" rx="10" fill="#f0f6fa"/>
+<text x="686" y="382" fill="#15263b" font-family="Consolas, monospace" font-size="19">CLAUDE_EXISTING_20261012_SCOPE_OK</text>
+<circle cx="678" cy="451" r="10" fill="#1c9067"/><path d="M673 451l3 3 6-7" fill="none" stroke="white" stroke-width="2"/>
+<text x="701" y="458" fill="#137553" font-size="20" font-weight="600">Completed · source matched</text>
+<rect x="48" y="520" width="1184" height="108" rx="18" fill="#20394a"/>
+<text x="76" y="561" fill="#f5f8fc" font-size="24" font-weight="700">22 source tests + 22 bundle tests passed</text>
+<text x="76" y="596" fill="#c3d1df" font-size="19">Cross-client reads passed · legacy clients preserved · no business-chat test messages</text>
+<text x="48" y="671" fill="#bed0df" font-size="17">Recorded tool results, not a desktop screenshot. UI navigation and cross-version behavior remain unverified.</text>
+</g></svg>

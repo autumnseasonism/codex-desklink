@@ -1,4 +1,6 @@
-# Claude / PI 独立会话入口
+# Dedicated Claude / PI controllers · 独立会话入口
+
+**English quick start.** Use the 0.2.1 Windows release. Ask your Codex desktop agent to verify the bootstrap chat ID, desktop pipe, running daemon executable/control socket and allowed project root, then run `setup-owned-clients.mjs` with those five verified arguments in that order. It refuses to overwrite existing profiles. Start `start-pi-owned.ps1` or `start-claude-owned.ps1`; check status and create the client controller first. Subsequent messages use that persistent source while targets may be any indexed local main chat, including another client's chat. All supported features are explicitly enabled. Preserve `profiles/state/` when migrating. Legacy configurations and running agents are not switched. Project creation accepts existing authorized folders only; archived targets require explicit restoration. Check target state before sending, because running work may be steered. Native project UI display and cross-version behavior remain unverified.
 
 0.2.1 的独立入口让 Claude 和 PI 各自先新建一条控制会话。后续消息来源指向各自入口；目标可以是任意已有的本机索引主会话，包括另一客户端创建的会话，也可以新建工作会话。来源归属和目标访问相互独立。旧入口继续使用旧配置，不自动切换正在运行的 Agent。
 

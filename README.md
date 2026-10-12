@@ -14,7 +14,7 @@ Let Claude Code or PI find, read and continue your local Codex chats — with re
 
 <p align="center"><a href="README.zh-CN.md">简体中文</a> · <a href="https://github.com/autumnseasonism/codex-desklink/releases/latest">Download for Windows</a> · <a href="docs/INSTALL.md">Install guide</a> · <a href="docs/COMPATIBILITY.md">Verified scope</a></p>
 
-**Local 0.2.1 update:** separate PI / Claude controller chats, access to any existing indexed local main chat, and real project creation, with supported features explicitly enabled. Legacy connections remain available. [Client-owned workflow](docs/CLIENT_OWNED.md). The published ZIP is still 0.1.2.
+**0.2.1:** separate PI / Claude controller chats, access to any existing indexed local main chat, and real project creation, with supported features explicitly enabled. Legacy connections remain available. [Client-owned workflow](docs/CLIENT_OWNED.md). [Download 0.2.1](https://github.com/autumnseasonism/codex-desklink/releases/tag/v0.2.1).
 
 ## Keep working where you left off
 
@@ -29,7 +29,8 @@ You started a task in Codex desktop. Later, you want Claude or PI to pick up the
 | Continue an idle task | Submit a follow-up to that same Codex conversation |
 | Return to an archived task | Explicitly restore it, then send the follow-up |
 | See what happened | Read latest-turn progress and replies; open the original chat in Codex |
-| Start a separate task | Create a local chat when creation is separately enabled |
+| Start a separate task | Create a local chat from your dedicated client controller |
+| Start a project | Register an existing authorized folder as a real local Codex project |
 
 > **Community project · experimental.** This uses version-dependent Codex desktop internal interfaces, not a stable public external API. Windows x64 is the verified platform. Read the [compatibility notes](docs/COMPATIBILITY.md) before relying on it for important work. Not affiliated with or endorsed by OpenAI, Anthropic or PI.
 
@@ -39,37 +40,45 @@ You started a task in Codex desktop. Later, you want Claude or PI to pick up the
 
 The bridge itself opens no network listener. Your agent clients and Codex still use their own model services. Conversation content read by a client becomes part of that client's context and follows its data policies.
 
-### Real desktop verification
+### Verified on a real local setup
 
-<p align="center"><img src="docs/assets/desktop-replies.png" alt="Real Codex desktop test conversation showing PI and Claude normal follow-ups and archived-chat restoration replies" width="620" /></p>
+<img src="docs/assets/verification-0.2.1.svg" alt="Real 0.2.1 test records: PI and Claude continued the same existing conversation, both completed, and each message source matched its own controller. 22 source and 22 bundle tests passed." width="100%" />
 
-*Actual test screenshot, not a mockup.* PI and Claude Code both submitted follow-ups to a test chat. The replies above appeared in that same Codex desktop conversation, including after archive restoration. The cropped screenshot contains only the test conversation. See [what was tested and what remains unverified](docs/COMPATIBILITY.md).
+*Readable visualization of recorded tool results, not a desktop screenshot.* PI was tested first, then Claude Code. Both read the other client's completed test chat and continued the same pre-existing chat to completion. The original message source IDs matched their respective controller chats. [Verification details and remaining limits](docs/COMPATIBILITY.md).
+
+<details>
+<summary>View the original desktop screenshot (0.1.2 test; click the image for its original size)</summary>
+
+<a href="docs/assets/desktop-replies.png"><img src="docs/assets/desktop-replies.png" alt="Original 0.1.2 desktop screenshot showing controlled PI and Claude continuation and archive restoration replies" width="725" /></a>
+
+This is an actual historical test screenshot. Its original resolution is 725 × 915; it is retained as evidence, not used as proof of 0.2.1 UI navigation or new-project sidebar behavior.
+</details>
 
 ## Get started
 
-**Recommended: the self-contained Windows release.** It includes the MCP service, dependencies and Node runtime. Install and sign in to Codex desktop and your chosen client separately.
+**Recommended: the 0.2.1 self-contained Windows release with dedicated client controllers.** It includes the bridge, locked dependencies and Node runtime. Install and sign in to Codex desktop and your chosen client separately.
 
-1. [Download the Windows ZIP](https://github.com/autumnseasonism/codex-desklink/releases/latest), check its SHA-256 against `SHA256SUMS.txt`, and extract it to a permanent folder.
-2. Open a Codex desktop chat and ask its agent to bind the package to the verified local connection. Start with read-only access; enable sending only when you want another agent to submit messages.
-3. Run the package's Claude or PI installer. A temporary launcher is also available if you prefer to try it before registering it for everyday use.
-4. Ask your client to check the connection, list projects/chats, and read a selected conversation. Then explicitly ask it to continue that chat.
+1. [Download the Windows ZIP](https://github.com/autumnseasonism/codex-desklink/releases/latest), verify `SHA256SUMS.txt`, and extract to a permanent folder.
+2. Ask your Codex desktop agent to verify the current chat ID, desktop connection, running daemon and permitted project folder, then initialize the [dedicated client profiles](docs/CLIENT_OWNED.md). This setup explicitly enables all supported capabilities, including control of existing local main chats.
+3. Start `start-pi-owned.ps1` or `start-claude-owned.ps1`. Ask the client to check its connection, then create its own controller chat first. That chat becomes its persistent message source.
+4. Choose an existing local main chat, or create a work chat/project. Ask the client to read the target state and submit your follow-up. Replies stay in the target's original Codex conversation.
 
-Example binding request to the **Codex desktop agent**:
+Example setup request to the **Codex desktop agent**:
 
-> Bind the Codex DeskLink folder I provide. Verify this chat's actual thread ID and CODEX_APP_TOOLS_PIPE_PATH before using configure.ps1. Enable access to all local indexed main conversations, including archives, but keep sending and creation disabled. Do not guess the endpoint or change global hooks or credentials.
+> Set up the Codex DeskLink folder I provide with dedicated PI and Claude profiles. Verify this chat's actual ID, the desktop pipe, running daemon executable/control socket and the permitted project root before using setup-owned-clients.mjs. Explicitly enable all supported features. Preserve existing configuration and controller state, running agents, hooks and credentials. Do not guess connection values.
 
-Example request to **Claude Code or PI**, after you enable sending:
+Example request to **Claude Code or PI**:
 
-> Use Codex DeskLink to find my selected local Codex chat and read its recent context. Continue it with the follow-up I provide. If it is archived, restore it only with my explicit permission. Report the latest reply and whether that turn has finished. Do not resend if delivery is uncertain.
+> Use Codex DeskLink. Check the connection and create your dedicated controller if needed. Find the existing chat I specify, read its context and state, then continue it with my follow-up. Use your own controller as the source. Restore an archive only if I explicitly request it. Report completion; never resend an uncertain submission.
 
-The [installation guide](docs/INSTALL.md) includes the exact scripts, source setup and configuration options. A Codex restart may require rebinding the connection.
+Existing installations can keep the [legacy read-only binding flow](docs/INSTALL.md). Do not replace a running client's registration; use the new launcher for its next session. A Codex restart may require connection rebinding.
 
 ## Access stays explicit
 
-- **Read scope starts narrow.** All-local browsing is an explicit opt-in. It covers indexed local main chats, not cloud chats, ChatGPT chats, internal subagents or deleted/unindexed records.
-- **Sending and creation are separate switches.** Seeing a project does not authorize creating work there. The setup helper leaves creation disabled.
+- **Source identity and target access are separate.** Dedicated setup enables all-local targets; legacy read-only setup starts narrow. It covers indexed local main chats, not cloud chats, ChatGPT chats, internal subagents or deleted/unindexed records.
+- **Sending and creation are separate switches.** Seeing a project does not authorize creating work there. Dedicated profiles enable both; the legacy binding helper leaves creation disabled.
 - **Archives are restored intentionally.** Sending to an archived chat requires `restoreArchived: true`.
-- **Submissions have persistent request IDs.** A repeated accepted request returns its receipt. An uncertain submission is never automatically resent. Keep the `state/` folder when moving an installation.
+- **Submissions have persistent request IDs.** A repeated accepted request returns its receipt. An uncertain submission is never automatically resent. Keep `profiles/state/` for dedicated controllers, or `state/` for legacy profiles, when moving an installation.
 - **History is context, not permission.** A statement in an old chat does not authorize a new action.
 - **Latest reply is not per-request tracking.** Concurrent senders may change the latest turn. A successful send receipt means accepted, not completed. No stop tool is exposed.
 

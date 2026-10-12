@@ -1,18 +1,18 @@
 # Changelog
 
-## 0.2.1 — Dedicated source with existing targets (local, not yet released)
+## 0.2.1 — Dedicated source with existing targets
 
 - Separate controller identity from target access. An explicit opt-in allows any existing indexed local main chat, including chats created by another client.
 - Preserve create-first, controller source, independent ledgers, explicit archive restoration and local-main index validation. Legacy profiles retain their scope.
 - New profiles explicitly enable existing conversation control; existing dedicated profiles can enable it without replacing controller state.
 
-## 0.2.0 — Client-owned conversations (local, not yet released)
+## 0.2.0 — Client-owned conversations
 
 - Separate PI / Claude controller identities, persisted ownership and request ledgers; clients create their own conversation before controlling work.
 - New owned launchers and setup explicitly enable all supported capabilities while preserving legacy configuration and running clients.
 - Real local project registration under allowed existing folders, plus creation and desktop handoff of project work chats.
 - Eight MCP tools; project capability and connection failures reported explicitly. Experimental project API requires a running local daemon.
-- See [client-owned workflow](docs/CLIENT_OWNED.md). This version has not been pushed or published.
+- See [client-owned workflow](docs/CLIENT_OWNED.md). Included in the 0.2.1 release.
 
 ## 0.1.2 — Initial public release
 

@@ -15,6 +15,7 @@ const schema=z.object({
  allowAllLocalConversations:z.boolean().default(false),
  clientId:z.enum(['pi','claude']).optional(),
  ownedConversationsOnly:z.boolean().default(false),
+ allowExistingConversationControl:z.boolean().default(false),
  allowProjectCreate:z.boolean().default(false),
  allowedProjectRoots:z.array(z.string().min(1)).default([]),
  projectServerPath:z.string().optional(),
@@ -29,6 +30,7 @@ export function loadConfig(file=process.env.CODEX_DESKTOP_BRIDGE_CONFIG||path.jo
  const config=schema.parse(JSON.parse(fs.readFileSync(file,'utf8')));
  if(!config.allowedThreadIds.includes(config.callerThreadId))throw Error('callerThreadId must be an explicitly authorized conversation');
  if(config.ownedConversationsOnly&&!config.clientId)throw Error('Owned mode requires a client identity');
+ if(config.allowExistingConversationControl&&(!config.ownedConversationsOnly||!config.allowAllLocalConversations))throw Error('Existing conversation control requires a dedicated client controller and the local index');
  if(config.allowProjectCreate&&(!config.ownedConversationsOnly||!config.projectServerPath||!config.projectSocketPath||!config.allowedProjectRoots.length))throw Error('Project creation requires owned mode, daemon connection and allowed roots');
  config.stateDir=path.resolve(config.stateDir||path.join(path.dirname(path.resolve(file)),'state'));
  if(config.ownedConversationsOnly)config.stateDir=path.join(config.stateDir,'clients',config.clientId);

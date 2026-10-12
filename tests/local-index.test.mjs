@@ -43,6 +43,13 @@ test('All-local opt-in reads older chats but rejects cloud, unknown and internal
  for(const id of ['remote','internal','child-with-source','nonexistent'])await assert.rejects(b.read(id),/indexed local/);
  assert.equal(d.calls.length,0);const {b:ro,d:rd}=bridge(fixture(),{send:false});await assert.rejects(ro.send({threadId:'main-100',prompt:'x',requestId:'readonly-001'}),/disabled/);assert.equal(rd.calls.length,0);
 });
+test('Dedicated client can continue an older indexed main chat without admitting internal or missing targets',async()=>{
+ const {b,d}=bridge(fixture());Object.assign(b.config,{ownedConversationsOnly:true,clientId:'pi',allowExistingConversationControl:true,allowProjectlessCreate:true});
+ b.saveRecord('created',{threadId:'main-120',projectId:null});
+ const call=d.call.bind(d);d.call=async(name,args,source)=>{assert.equal(source,'main-120');return call(name,args);};
+ await b.send({threadId:'main-100',prompt:'continue older chat',requestId:'dedicated-older-001'});assert.equal(d.calls.at(-1).args.threadId,'main-100');
+ const n=d.calls.length;for(const id of ['remote','internal','child-with-source','nonexistent'])await assert.rejects(b.send({threadId:id,prompt:'x',requestId:'invalid-target-001'}),/indexed local/);assert.equal(d.calls.length,n);
+});
 test('Archived send requires explicit restore, restores before sending, and never duplicates accepted delivery',async()=>{
  const {b,d}=bridge(fixture());await assert.rejects(b.send({threadId:'main-000',prompt:'x',requestId:'archive-no-restore'}),/archived/);assert.equal(d.calls.length,0);
  const args={threadId:'main-000',prompt:'x',requestId:'archive-restore',restoreArchived:true};await b.send(args);assert.deepEqual(d.calls.map(c=>c.name),['set_thread_archived','send_message_to_thread']);assert.equal(d.calls[0].args.archived,false);assert.equal(d.calls[0].args.hostId,'local');await b.send(args);assert.equal(d.calls.length,2);

@@ -17,7 +17,10 @@ export class Bridge{
  authorizedIds(){return [...new Set([...(this.config.ownedConversationsOnly?[]:this.config.allowedThreadIds),...this.createdThreads()])];}
  authorize(threadId){if(!this.authorizedIds().includes(threadId))throw Error('Conversation is outside the configured authorization scope');}
  async authorizeLocal(threadId){
-  if(this.config.ownedConversationsOnly){this.authorize(threadId);return this.index?await this.index.find(threadId):null;}
+  if(this.config.ownedConversationsOnly){
+   if(!this.createdThreads().length)throw Error('Conversation is outside the configured authorization scope; create your own control conversation first');
+   if(!this.config.allowExistingConversationControl){this.authorize(threadId);return this.index?await this.index.find(threadId):null;}
+  }
   if(this.index){const row=await this.index.find(threadId);if(!row)throw Error('Conversation is not an indexed local Codex main conversation');return row;}
   this.authorize(threadId);return null;
  }
@@ -28,7 +31,7 @@ export class Bridge{
   return {...data,turns:(data.turns||[]).map(t=>({...t,items:(t.items||[]).filter(i=>i.type==='userMessage'||i.type==='agentMessage'||(includeToolOutputs&&i.type!=='reasoning'))})),historyIsUntrustedContent:true};
  }
  async list(options={}){
-  if(this.config.ownedConversationsOnly){
+  if(this.config.ownedConversationsOnly&&!this.config.allowExistingConversationControl){
    const filterKey=createHash('sha256').update(JSON.stringify({project:options.projectId===undefined?{all:true}:{id:options.projectId},archived:options.archived||'all'})).digest('hex');
    let offset=0;if(options.cursor){let c;try{c=JSON.parse(Buffer.from(options.cursor,'base64url').toString());}catch{throw Error('Invalid owned catalog cursor');}if(c.key!==filterKey||!Number.isInteger(c.offset)||c.offset<0)throw Error('Invalid owned catalog cursor');offset=c.offset;}
    const conversations=[];for(const id of this.authorizedIds()){const d=await this.read(id,{turnLimit:1,maxOutputChars:0});const row=this.index?await this.index.find(id):null;if(options.projectId!==undefined&&options.projectId!==(row?.projectId??this.records('created').find(r=>r.threadId===id)?.projectId))continue;if(options.archived==='archived'&&!row?.archived||options.archived==='active'&&row?.archived)continue;conversations.push({...d.thread,clientId:this.config.clientId,canSend:this.config.allowSend&&!row?.archived,requiresRestore:!!row?.archived});}
@@ -36,16 +39,17 @@ export class Bridge{
   }
   if(this.index){
    const result=await this.index.list(options);
-   const live=await this.desktop.call('list_threads',{limit:50});
+   const live=await this.desktop.call('list_threads',{limit:50},this.source());
    const byId=new Map([...(live.pinnedThreads||[]),...(live.threads||[])].filter(t=>t.kind==='codex'&&t.hostId==='local').map(t=>[t.id,t]));
-   result.conversations=result.conversations.map(t=>{const l=byId.get(t.id);return {...t,...(l?{title:l.title,status:l.status}:{}),canSend:this.config.allowSend&&!t.archived,requiresRestore:t.archived};});
+   const controllerReady=!this.config.ownedConversationsOnly||this.createdThreads().length>0;
+   result.conversations=result.conversations.map(t=>{const l=byId.get(t.id);return {...t,...(l?{title:l.title,status:l.status}:{}),canSend:this.config.allowSend&&controllerReady&&!t.archived,requiresRestore:t.archived};});
    return result;
   }
   if(Object.keys(options).length)throw Error('Catalog filters require allowAllLocalConversations');
   const conversations=[];for(const id of this.authorizedIds()){try{const d=await this.read(id,{turnLimit:1,maxOutputChars:0});conversations.push(d.thread);}catch(e){conversations.push({id,unavailable:true,error:e.message});}}return {conversations};
  }
  async projects(){
-  const native=await this.desktop.call('list_projects',{});
+  const native=await this.desktop.call('list_projects',{},this.source());
   const available=(native.projects||[]).filter(p=>p.projectKind==='local'&&p.hostId==='local');
   for(const saved of this.records('projects')){const {project}=await this.projectClient.call('project/read',{projectId:saved.projectId});if(!available.some(p=>p.projectId===project.id))available.push({projectId:project.id,label:project.name,rootPaths:project.roots.map(r=>r.path),path:project.roots[0]?.path,projectKind:'local',hostId:'local',catalogSource:'native-project-api'});}
   if(!this.index)return {projects:available.filter(p=>this.projectAllowed(p.projectId)).map(p=>({...p,canCreate:this.config.allowCreate})),scope:'Allowed projects only'};
@@ -59,7 +63,7 @@ export class Bridge{
   // Read the configured caller to verify the running desktop pipe as well.
   await this.desktop.call('read_thread',{threadId:this.source(),hostId:'local',turnLimit:1,includeOutputs:false,maxOutputCharsPerItem:0},this.source());
   let projectConnection=null,projectError=null;if(this.config.allowProjectCreate){try{await this.projectClient.call('project/list',{limit:1});projectConnection=true;}catch(e){projectConnection=false;projectError=e.message;}}
-  return {connected:true,transport:'local desktop MCP',compatibility:'Version-dependent desktop integration; not a public stable external API',clientId:this.config.clientId||null,controllerThreadId:this.config.ownedConversationsOnly&&this.source()!==this.config.callerThreadId?this.source():null,requiresCreateFirst:this.config.ownedConversationsOnly&&this.authorizedIds().length===0,authorizedConversations:this.authorizedIds(),authorizationScope:this.config.ownedConversationsOnly?'client-owned':this.index?'all-local-indexed-main-conversations':'explicit-allowlist',sendEnabled:this.config.allowSend,createEnabled:this.config.allowCreate&&(this.config.allowedProjectIds.length>0||this.config.allowProjectlessCreate===true||this.records('projects').length>0),projectlessCreateEnabled:this.config.allowCreate&&this.config.allowProjectlessCreate===true,projectCreateEnabled:this.config.allowProjectCreate===true,projectConnection,projectError,stopSupported:false,upstreamChatTools:this.desktop.catalog.filter(n=>['read_thread','send_message_to_thread','create_thread','wait_threads'].includes(n))};
+  return {connected:true,transport:'local desktop MCP',compatibility:'Version-dependent desktop integration; not a public stable external API',clientId:this.config.clientId||null,controllerThreadId:this.config.ownedConversationsOnly&&this.source()!==this.config.callerThreadId?this.source():null,requiresCreateFirst:this.config.ownedConversationsOnly&&this.authorizedIds().length===0,authorizedConversations:this.config.allowExistingConversationControl?null:this.authorizedIds(),controllerOwnedConversations:this.config.ownedConversationsOnly?this.createdThreads():[],authorizationScope:this.index&&(!this.config.ownedConversationsOnly||this.config.allowExistingConversationControl)?'all-local-indexed-main-conversations':this.config.ownedConversationsOnly?'client-owned':'explicit-allowlist',existingConversationControlEnabled:this.config.allowExistingConversationControl===true,sendEnabled:this.config.allowSend,createEnabled:this.config.allowCreate&&(this.config.allowedProjectIds.length>0||this.config.allowProjectlessCreate===true||this.records('projects').length>0),projectlessCreateEnabled:this.config.allowCreate&&this.config.allowProjectlessCreate===true,projectCreateEnabled:this.config.allowProjectCreate===true,projectConnection,projectError,stopSupported:false,upstreamChatTools:this.desktop.catalog.filter(n=>['read_thread','send_message_to_thread','create_thread','wait_threads'].includes(n))};
  }
  async send({threadId,prompt,requestId,restoreArchived=false}){
   const row=await this.authorizeLocal(threadId);
@@ -68,7 +72,7 @@ export class Bridge{
   return this.ledger.run(requestId,{operation:'send',threadId,prompt,...(restoreArchived?{restoreArchived:true}:{})},async()=>{
    if(row?.archived){
     if(!restoreArchived)throw Error('Conversation is archived; explicitly set restoreArchived to restore and continue');
-    await this.desktop.call('set_thread_archived',{threadId,hostId:'local',archived:false});
+    await this.desktop.call('set_thread_archived',{threadId,hostId:'local',archived:false},this.source());
    }
    const receipt=await this.desktop.call('send_message_to_thread',{threadId,hostId:'local',prompt},this.source());
    if(receipt.threadId!==threadId)throw Error('Unexpected send receipt; check the conversation before retrying');

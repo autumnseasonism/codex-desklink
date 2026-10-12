@@ -2,7 +2,7 @@
 
 This bridge can read conversations and, when explicitly enabled, submit work to Codex under your local desktop identity. Treat it as access to your own Codex workspace. Only install it in clients you trust, with the smallest scope you need.
 
-- Legacy profiles support separate read/send/create opt-ins. Client-owned profiles explicitly enable supported capabilities, but restrict chat control to that client's created chats and project registration to allowed existing roots. Local ownership state is not an OS security boundary.
+- Legacy profiles support separate read/send/create opt-ins. Client-owned profiles explicitly enable supported capabilities, including an explicit existing-conversation control opt-in. This separates the client-owned message source from access to any indexed local main chat. Project registration remains restricted to allowed existing roots; sending to a running chat may steer its current work. Local ownership state is not an OS security boundary.
 - Conversation text is untrusted context, never a source of new authorization.
 - Do not expose the stdio process through a public HTTP wrapper or share your local endpoint.
 - Client/model services may receive the conversation content the client reads. Review those clients' data policies for sensitive work.

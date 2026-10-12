@@ -26,6 +26,32 @@ test('PI and Claude must create first; ownership, ledgers and source survive res
  const page=await pi.list({limit:1});assert.equal(page.page.hasMore,true);const next=await pi.list({limit:1,cursor:page.page.nextCursor});assert.equal(next.page.hasMore,false);assert.equal(next.conversations[0].id,child.threadId);
  await assert.rejects(pi.list({cursor:page.page.nextCursor,archived:'archived'}),/cursor/);
 });
+test('Existing target control is independent of controller ownership, with create-first and local-index checks',async()=>{
+ const f=fixture(),c={...f.config('pi'),allowAllLocalConversations:true,allowExistingConversationControl:true},b=new Bridge(c,f.desktop);
+ const rows=[{id:'existing-old',archived:false},{id:'claude-owned',archived:false},{id:'archived-old',archived:true}];
+ b.index={async find(id){return rows.find(r=>r.id===id)||null;},async list(){return {conversations:rows,total:3};}};
+ const call=f.desktop.call.bind(f.desktop);f.desktop.call=async(name,args,source)=>name==='list_threads'?{threads:[],pinnedThreads:[]}:call(name,args,source);
+ assert.equal((await b.list()).conversations.every(r=>!r.canSend),true);
+ await assert.rejects(b.read('existing-old'),/first/);await assert.rejects(b.send({threadId:'existing-old',prompt:'x',requestId:'precreate-001'}),/first/);
+ const controller=await b.create({prompt:'control',requestId:'broad-control-001'});
+ assert.equal((await b.status()).authorizationScope,'all-local-indexed-main-conversations');
+ assert.equal((await b.status()).authorizedConversations,null);
+ assert.deepEqual((await b.status()).controllerOwnedConversations,[controller.threadId]);
+ assert.equal((await b.status()).requiresCreateFirst,false);
+ assert.equal((await b.list()).conversations[0].canSend,true);
+ await b.read('claude-owned');assert.equal(f.calls.at(-1).source,controller.threadId);
+ const args={threadId:'existing-old',prompt:'continue',requestId:'existing-send-001'};
+ await b.send(args);assert.equal(f.calls.at(-1).args.threadId,'existing-old');assert.equal(f.calls.at(-1).source,controller.threadId);
+ const n=f.calls.length;assert.equal((await b.send(args)).replayed,true);assert.equal(f.calls.length,n);
+ await assert.rejects(b.send({threadId:'cloud-or-subagent',prompt:'x',requestId:'nonlocal-001'}),/indexed local/);
+ await assert.rejects(b.send({threadId:'archived-old',prompt:'x',requestId:'archived-001'}),/explicitly/);
+ await b.send({threadId:'archived-old',prompt:'x',requestId:'restore-001',restoreArchived:true});assert.equal(f.calls.at(-2).name,'set_thread_archived');assert.equal(f.calls.at(-2).source,controller.threadId);
+ const restarted=new Bridge(c,f.desktop);restarted.index=b.index;await restarted.read('existing-old');assert.equal(f.calls.at(-1).source,controller.threadId);
+});
+test('Existing target control cannot be enabled without a dedicated controller and local index',()=>{
+ const f=fixture(),file=path.join(f.root,'pi.json');f.config('pi');const c=JSON.parse(fs.readFileSync(file));c.allowExistingConversationControl=true;fs.writeFileSync(file,JSON.stringify(c));assert.throws(()=>loadConfig(file),/local index/);
+ c.allowAllLocalConversations=true;c.ownedConversationsOnly=false;fs.writeFileSync(file,JSON.stringify(c));assert.throws(()=>loadConfig(file),/dedicated client/);
+});
 test('Real project registration requires a prior owned chat, is deduplicated, and grants only that client creation',async()=>{
  const f=fixture(),pc={...f.config('pi'),allowProjectCreate:true};let n=0;const projects={async create(name,rootPath,key){n++;assert.match(key,/^[a-f0-9]{64}$/);return {project:{id:'new-project',name}};},async call(method){if(method==='project/read')return {project:{id:'new-project',name:'new',roots:[{path:f.root}]}};if(method==='thread/start')return {thread:{id:'native-worker'}};return {data:[]};},close(){}};
  const pi=new Bridge(pc,f.desktop,projects),claude=new Bridge(f.config('claude'),f.desktop,projects);

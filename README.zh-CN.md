@@ -12,7 +12,7 @@
 
 <p align="center"><a href="README.md">English</a> · <a href="https://github.com/autumnseasonism/codex-desklink/releases/latest">下载 Windows 安装包</a> · <a href="docs/INSTALL.md">安装说明</a> · <a href="docs/COMPATIBILITY.md">验证范围</a></p>
 
-**本地 0.2.0 更新：**Claude / PI 各有独立控制入口和所属工作会话，支持真实新建项目，所有支持的功能明确开启；旧连接继续保留。[独立入口说明](docs/CLIENT_OWNED.md)。公开下载包目前仍为 0.1.2。
+**本地 0.2.1 更新：**Claude / PI 各有独立来源入口，可以控制任意已有本机索引主会话，支持真实新建项目，所有支持的功能明确开启；旧连接继续保留。[独立入口说明](docs/CLIENT_OWNED.md)。公开下载包目前仍为 0.1.2。
 
 ## 从上次停下的地方，继续工作
 

@@ -14,7 +14,7 @@ Let Claude Code or PI find, read and continue your local Codex chats — with re
 
 <p align="center"><a href="README.zh-CN.md">简体中文</a> · <a href="https://github.com/autumnseasonism/codex-desklink/releases/latest">Download for Windows</a> · <a href="docs/INSTALL.md">Install guide</a> · <a href="docs/COMPATIBILITY.md">Verified scope</a></p>
 
-**Local 0.2.0 update:** separate PI / Claude controller chats, client-owned work chats and real project creation, with supported features explicitly enabled. Legacy connections remain available. [Client-owned workflow](docs/CLIENT_OWNED.md). The published ZIP is still 0.1.2.
+**Local 0.2.1 update:** separate PI / Claude controller chats, access to any existing indexed local main chat, and real project creation, with supported features explicitly enabled. Legacy connections remain available. [Client-owned workflow](docs/CLIENT_OWNED.md). The published ZIP is still 0.1.2.
 
 ## Keep working where you left off
 

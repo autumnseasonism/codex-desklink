@@ -1,8 +1,8 @@
 # Installation / 安装说明
 
-For separate PI / Claude ownership with explicitly enabled capabilities, use the new [client-owned workflow](CLIENT_OWNED.md). It adds dedicated launchers without replacing a running legacy client. 0.2.0 is a local update; the currently published ZIP remains 0.1.2. The legacy binding flow below preserves its original defaults.
+For separate PI / Claude ownership with explicitly enabled capabilities, use the new [client-owned workflow](CLIENT_OWNED.md). It adds dedicated launchers without replacing a running legacy client. 0.2.1 is a local update; the currently published ZIP remains 0.1.2. The legacy binding flow below preserves its original defaults.
 
-Claude / PI 各自创建和控制所属会话、功能明确开启，请使用[独立入口说明](CLIENT_OWNED.md)。新入口不覆盖正在使用的旧入口；当前发布包仍为 0.1.2，0.2.0 尚未公开发布。下方旧绑定流程保留原默认值。
+Claude / PI 各自建立来源入口，并可控制任意已有本机索引主会话、功能明确开启，请使用[独立入口说明](CLIENT_OWNED.md)。新入口不覆盖正在使用的旧入口；当前发布包仍为 0.1.2，0.2.1 尚未公开发布。下方旧绑定流程保留原默认值。
 
 Use the [Windows release](https://github.com/autumnseasonism/codex-desklink/releases/latest) for everyday use. The ZIP contains the bridge, locked dependencies and a Node runtime. You still need a running Codex desktop app with its bundled `codex-app-tools`, and an installed, signed-in Claude Code or PI client. This is currently a Windows x64 integration.
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 — Dedicated source with existing targets (local, not yet released)
+
+- Separate controller identity from target access. An explicit opt-in allows any existing indexed local main chat, including chats created by another client.
+- Preserve create-first, controller source, independent ledgers, explicit archive restoration and local-main index validation. Legacy profiles retain their scope.
+- New profiles explicitly enable existing conversation control; existing dedicated profiles can enable it without replacing controller state.
+
 ## 0.2.0 — Client-owned conversations (local, not yet released)
 
 - Separate PI / Claude controller identities, persisted ownership and request ledgers; clients create their own conversation before controlling work.
